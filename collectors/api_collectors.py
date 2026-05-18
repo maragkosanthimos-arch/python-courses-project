@@ -3,9 +3,9 @@ collectors for APIs, data fetching, data collection, web scraping, API integrati
 
 api_collectors.py
 Συλλογή δεδομένων από 3 APIs χωρίς API key:
-  1. Coursera
-  2. iTunes
-  3. Open Library
+  1. stepik
+  2. Saylor Academy
+  3. OpenLearn (με static dataset, καθώς δεν έχει public API)
 """
 
 import requests
