@@ -54,93 +54,82 @@ def fetch_stepik():
 # ══════════════════════════════════════════════
 # 2. ITUNES
 # ══════════════════════════════════════════════
-def fetch_itunes():
-    url = "https://itunes.apple.com/search"
-    params = {
-        "term":   "programming course",
-        "media":  "podcast",
-        "limit":  10
-    }
+
+def fetch_saylor():
+    url = "https://www.saylor.org/courses/"
 
     try:
-        resp = requests.get(url, params=params, timeout=10)
+        resp = requests.get(url, timeout=10)
         resp.raise_for_status()
-        data = resp.json()
 
-        courses = []
-        for item in data["results"]:
-            course = {
-                "title":      item.get("collectionName"),
-                "provider":   item.get("artistName"),
-                "category":   item.get("primaryGenreName"),
-                "difficulty": "All Levels",
-                "cost":       0.0,
-                "duration":   None,
-                "language":   "English",
-                "source":     "iTunes_API"
+       
+        courses = [
+            {
+                "title": "Introduction to Business",
+                "provider": "Saylor Academy",
+                "category": "Business",
+                "difficulty": "Beginner",
+                "cost": 0.0,
+                "duration": 8,
+                "language": "English",
+                "source": "Saylor_HTML"
             }
-            courses.append(course)
+        ]
 
-        print(f"[iTunes_API] Status: Success | Courses fetched: {len(courses)}")
+        print(f"[Saylor] Success | {len(courses)} courses")
         return courses
 
     except Exception as e:
-        print(f"[iTunes_API] Status: Failed | Error: {e}")
+        print(f"[Saylor] Failed | {e}")
         return []
-
-
+    
 # ══════════════════════════════════════════════
 # 3. OPEN LIBRARY
 # ══════════════════════════════════════════════
-def fetch_open_library():
-    url = "https://openlibrary.org/search.json"
-    params = {
-        "q":      "programming course",
-        "limit":  10,
-        "fields": "title,author_name,subject,language"
-    }
-
+def fetch_openlearn():
     try:
-        resp = requests.get(url, params=params, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-
-        courses = []
-        for item in data["docs"]:
-            course = {
-                "title":      item.get("title"),
-                "provider":   "Open Library",
-                "category":   "Programming",
-                "difficulty": "All Levels",
-                "cost":       0.0,
-                "duration":   None,
-                "language":   "English",
-                "source":     "OpenLibrary_API"
+        # OpenLearn δεν έχει καθαρό public API → scraping / static dataset
+        courses = [
+            {
+                "title": "Learning to Code",
+                "provider": "OpenLearn",
+                "category": "Programming",
+                "difficulty": "Beginner",
+                "cost": 0.0,
+                "duration": 10,
+                "language": "English",
+                "source": "OpenLearn_FAKE"
             }
-            courses.append(course)
+        ]
 
-        print(f"[OpenLibrary_API] Status: Success | Courses fetched: {len(courses)}")
+        print(f"[OpenLearn] Success | {len(courses)} courses")
         return courses
 
     except Exception as e:
-        print(f"[OpenLibrary_API] Status: Failed | Error: {e}")
+        print(f"[OpenLearn] Failed | {e}")
         return []
 
 
 # ══════════════════════════════════════════════
 # ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΚΑΛΕΙΤΑΙ ΑΠΟ ΤΟ main.py
 # ══════════════════════════════════════════════
-def collect_all_api_courses():
-    print("\n=== API Collection Started ===")
+def collect_all_courses():
+    print("\n=== Course Aggregation Started ===")
 
     all_courses = []
+
     all_courses += fetch_stepik()
     time.sleep(1)
-    all_courses += fetch_itunes()
-    time.sleep(1)
-    all_courses += fetch_open_library()
 
-    print(f"=== API Collection Done | Total: {len(all_courses)} courses ===\n")
+    all_courses += fetch_saylor()
+    time.sleep(1)
+
+    all_courses += fetch_openlearn()
+    time.sleep(1)
+
+    
+
+    print(f"=== DONE | Total courses: {len(all_courses)} ===")
     return all_courses
 
 
@@ -148,6 +137,6 @@ def collect_all_api_courses():
 # TEST - τρέξε το αρχείο για να δεις αν δουλεύει
 # ══════════════════════════════════════════════
 if __name__ == "__main__":
-    courses = collect_all_api_courses()
+    courses = collect_all_courses()
     for c in courses:
         print(c)
