@@ -1,279 +1,164 @@
 import requests
 import pandas as pd
 
-# για χρήση APIs χρειαζόμαστε requests και pandas
-print("Libraries loaded successfully!")
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (X11; Linux x86_64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
 
-# ── Search Parameter ─────────────────────────────────────
-SEARCH_TERM = "python"
+COLUMNS = [
+    "Course Title", "Provider / University", "Category",
+    "Difficulty Level", "Cost", "Duration", "Teaching Language"
+]
+
+
+def empty_dataframe():
+    return pd.DataFrame(columns=COLUMNS)
 
 
 # =========================================================
 # 🔵 API 1 — Open Library API
-# Educational books and learning material
 # =========================================================
 
-openlib_url = (
-    f"https://openlibrary.org/search.json"
-    f"?q={SEARCH_TERM}+programming"
-    f"&fields=title,author_name,subject,language"
-    f"&limit=20"
-)
+def fetch_openlib(search_term):
 
-print(f"\nSending request to Open Library API...")
+    print(f"\n[Open Library] Sending request...")
 
-response_openlib = requests.get(
-    openlib_url,
-    timeout=10
-)
+    url = (
+        f"https://openlibrary.org/search.json"
+        f"?q={search_term}+programming"
+        f"&fields=title,author_name,subject,language"
+        f"&limit=20"
+    )
 
-if response_openlib.status_code == 200:
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.RequestException as e:
+        print(f"[Open Library] Connection error: {e}")
+        return empty_dataframe()
 
-    data_openlib = response_openlib.json()
+    if response.status_code != 200:
+        print(f"[Open Library] API Error: {response.status_code}")
+        return empty_dataframe()
 
-    print("Data received successfully!")
-    print(f"Total results found: {data_openlib['numFound']}")
+    data = response.json()
+    books_raw = data.get("docs", [])
 
-else:
+    print(f"[Open Library] Status: Success — {len(books_raw)} results found")
 
-    print(f"API Error: {response_openlib.status_code}")
-    data_openlib = {"docs": []}
+    cleaned = []
 
-books_raw = data_openlib["docs"]
+    for book in books_raw[:20]:
+        cleaned.append({
+            "Course Title"         : book.get("title", "N/A"),
+            "Provider / University": ", ".join(book.get("author_name", ["Unknown Author"])),
+            "Category"             : ", ".join(book.get("subject", ["Programming"])[:2]),
+            "Difficulty Level"     : "N/A",
+            "Cost"                 : "Free",
+            "Duration"             : "N/A",
+            "Teaching Language"    : ", ".join(book.get("language", ["English"])[:1])
+        })
 
-cleaned_openlib = []
-
-for book in books_raw[:20]:
-
-    cleaned_openlib.append({
-
-        "Course Title": book.get(
-            "title",
-            "N/A"
-        ),
-
-        "Provider / University": ", ".join(
-            book.get("author_name", ["Unknown Author"])
-        ),
-
-        "Category": ", ".join(
-            book.get("subject", ["Programming"])[:2]
-        ),
-
-        "Difficulty Level": "N/A",
-
-        "Cost": "Free",
-
-        "Duration": "N/A",
-
-        "Teaching Language": ", ".join(
-            book.get("language", ["English"])[:1]
-        )
-
-    })
-
-df_openlib = pd.DataFrame(cleaned_openlib)
-
-print("\nOpen Library Results:")
-print(df_openlib.head(10).to_string(index=False))
+    return pd.DataFrame(cleaned) if cleaned else empty_dataframe()
 
 
 # =========================================================
-# 🟠 API 2 — iTunes Search API (Apple)
-# Educational podcasts and courses — no API key needed
+# 🟠 API 2 — iTunes Search API
 # =========================================================
 
-itunes_url = (
-    f"https://itunes.apple.com/search"
-    f"?term={SEARCH_TERM}+course"
-    f"&media=podcast"
-    f"&entity=podcast"
-    f"&limit=20"
-    f"&lang=en_us"
-)
+def fetch_itunes(search_term):
 
-print(f"\nSending request to iTunes API...")
+    print(f"\n[iTunes] Sending request...")
 
-response_itunes = requests.get(
-    itunes_url,
-    timeout=10
-)
+    url = (
+        f"https://itunes.apple.com/search"
+        f"?term={search_term}+course"
+        f"&media=podcast"
+        f"&entity=podcast"
+        f"&limit=20"
+        f"&lang=en_us"
+    )
 
-if response_itunes.status_code == 200:
+    try:
+        response = requests.get(url, timeout=10)
+    except requests.RequestException as e:
+        print(f"[iTunes] Connection error: {e}")
+        return empty_dataframe()
 
-    data_itunes = response_itunes.json()
+    if response.status_code != 200:
+        print(f"[iTunes] API Error: {response.status_code}")
+        return empty_dataframe()
 
-    results_itunes = data_itunes.get("results", [])
+    results = response.json().get("results", [])
 
-    print("Data received successfully!")
-    print(f"Total results found: {data_itunes.get('resultCount', 0)}")
+    print(f"[iTunes] Status: Success — {len(results)} results found")
 
-    # Sample of first result
-    if results_itunes:
-        sample = results_itunes[0]
-        print(f"\n Title     : {sample.get('collectionName')}")
-        print(f" Creator   : {sample.get('artistName', 'N/A')}")
-        print(f" Genre     : {', '.join(sample.get('genres', ['N/A']))}")
-        print(f" Link      : {sample.get('collectionViewUrl', 'N/A')}")
+    cleaned = []
 
-else:
+    for item in results:
+        cleaned.append({
+            "Course Title"         : item.get("collectionName", "N/A"),
+            "Provider / University": item.get("artistName", "N/A"),
+            "Category"             : ", ".join(item.get("genres", ["N/A"])),
+            "Difficulty Level"     : "N/A",
+            "Cost"                 : "Free",
+            "Duration"             : "Self-paced",
+            "Teaching Language"    : "English"
+        })
 
-    print(f"API Error: {response_itunes.status_code}")
-    results_itunes = []
-
-cleaned_itunes = []
-
-for item in results_itunes:
-
-    cleaned_itunes.append({
-
-        "Course Title": item.get(
-            "collectionName",
-            "N/A"
-        ),
-
-        "Provider / University": item.get(
-            "artistName",
-            "N/A"
-        ),
-
-        "Category": ", ".join(
-            item.get("genres", ["N/A"])
-        ),
-
-        "Difficulty Level": "N/A",
-
-        "Cost": "Free",
-
-        "Duration": "Self-paced",
-
-        "Teaching Language": "English"
-
-    })
-
-df_itunes = pd.DataFrame(cleaned_itunes) if cleaned_itunes else pd.DataFrame(
-    columns=["Course Title", "Provider / University", "Category",
-             "Difficulty Level", "Cost", "Duration", "Teaching Language"]
-)
-
-print("\niTunes Results:")
-print(df_itunes.head(10).to_string(index=False))
+    return pd.DataFrame(cleaned) if cleaned else empty_dataframe()
 
 
 # =========================================================
 # 🟢 API 3 — GitHub Search API
-# Educational repositories and tutorials
 # =========================================================
 
-github_url = (
-    f"https://api.github.com/search/repositories"
-    f"?q={SEARCH_TERM}+course+tutorial"
-    f"&sort=stars"
-    f"&order=desc"
-    f"&per_page=20"
-)
+def fetch_github(search_term):
 
-headers_github = {
-    "Accept": "application/vnd.github+json"
-}
+    print(f"\n[GitHub] Sending request...")
 
-print(f"\nSending request to GitHub API...")
+    url = (
+        f"https://api.github.com/search/repositories"
+        f"?q={search_term}+course+tutorial"
+        f"&sort=stars"
+        f"&order=desc"
+        f"&per_page=20"
+    )
 
-response_github = requests.get(
-    github_url,
-    headers=headers_github,
-    timeout=10
-)
+    try:
+        response = requests.get(
+            url,
+            headers={"Accept": "application/vnd.github+json"},
+            timeout=10
+        )
+    except requests.RequestException as e:
+        print(f"[GitHub] Connection error: {e}")
+        return empty_dataframe()
 
-if response_github.status_code == 200:
+    if response.status_code != 200:
+        print(f"[GitHub] API Error: {response.status_code}")
+        return empty_dataframe()
 
-    data_github = response_github.json()
+    results = response.json().get("items", [])
 
-    results_github = data_github.get("items", [])
+    print(f"[GitHub] Status: Success — {len(results)} results found")
 
-    print("Data received successfully!")
-    print(f"Total results found: {data_github.get('total_count', 0)}")
+    cleaned = []
 
-else:
+    for repo in results:
+        cleaned.append({
+            "Course Title"         : repo.get("name", "N/A"),
+            "Provider / University": repo.get("owner", {}).get("login", "N/A"),
+            "Category"             : repo.get("language", "Programming"),
+            "Difficulty Level"     : "N/A",
+            "Cost"                 : "Free",
+            "Duration"             : "Self-paced",
+            "Teaching Language"    : "English"
+        })
 
-    print(f"API Error: {response_github.status_code}")
-    results_github = []
-
-cleaned_github = []
-
-for repo in results_github:
-
-    cleaned_github.append({
-
-        "Course Title": repo.get(
-            "name",
-            "N/A"
-        ),
-
-        "Provider / University": repo.get(
-            "owner",
-            {}
-        ).get(
-            "login",
-            "N/A"
-        ),
-
-        "Category": repo.get(
-            "language",
-            "Programming"
-        ),
-
-        "Difficulty Level": "N/A",
-
-        "Cost": "Free",
-
-        "Duration": "Self-paced",
-
-        "Teaching Language": "English"
-
-    })
-
-df_github = pd.DataFrame(cleaned_github)
-
-print("\nGitHub Results:")
-print(df_github.head(10).to_string(index=False))
-
-
-# =========================================================
-# 🔗 Merge All APIs
-# =========================================================
-
-frames = [
-
-    df_openlib,
-    df_itunes,   # ← διορθώθηκε από df_youtube
-    df_github
-
-]
-
-df_all = pd.concat(
-    frames,
-    ignore_index=True
-)
-
-print(f"\nTotal courses collected: {len(df_all)}")
-
-print("\nFinal Unified Dataset:")
-print(df_all.head(20).to_string(index=False))
-
-
-# =========================================================
-# Export to CSV
-# =========================================================
-
-output_filename = f"courses_{SEARCH_TERM}.csv"
-
-df_all.to_csv(
-
-    output_filename,
-    index=False,
-    encoding="utf-8-sig"
-
-)
-
-print(f"\nFile '{output_filename}' created successfully!")
+    return pd.DataFrame(cleaned) if cleaned else empty_dataframe()

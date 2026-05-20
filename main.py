@@ -1,25 +1,29 @@
-import time
-from api_collectors import fetch_udemy, fetch_youtube, fetch_coursera
+import pandas as pd
+from collectors.api_collectors import fetch_github, fetch_itunes, fetch_openlib
+from collectors.scrapers import scrape_geeksforgeeks, scrape_codecademy, scrape_coursera
 
-def collect_all_courses():
-    print("\n=== CLOSED API COURSE AGGREGATOR ===")
+SEARCH_TERM_1 = "data science"
+SEARCH_TERM_2 = "AI"
+SEARCH_TERM_3 = "python"
 
-    all_courses = []
+df_openlib = fetch_openlib(SEARCH_TERM_3)
+df_itunes  = fetch_itunes(SEARCH_TERM_3)
+df_github  = fetch_github(SEARCH_TERM_3)
 
-    all_courses += fetch_udemy()
-    time.sleep(1)
+# ── Scrapers ──────────────────────────────────────────
+df_gfg        = scrape_geeksforgeeks(SEARCH_TERM_1)
+df_coursera   = scrape_coursera(SEARCH_TERM_2)
+df_codecademy = scrape_codecademy(SEARCH_TERM_3)
 
-    all_courses += fetch_youtube()
-    time.sleep(1)
+# ── Συνδυασμός ────────────────────────────────────────
+df_final = pd.concat([
+    df_openlib, df_itunes, df_github,
+    df_gfg, df_coursera, df_codecademy
+], ignore_index=True)
 
-    all_courses += fetch_coursera()
+print(f"\nTotal courses collected: {len(df_final)}")
+print(df_final.to_string(index=False))
 
-    print(f"\n=== DONE | TOTAL COURSES: {len(all_courses)} ===")
-    return all_courses
-
-
-if __name__ == "__main__":
-    courses = collect_all_courses()
-
-    for c in courses:
-        print(c)
+# ── Αποθήκευση ────────────────────────────────────────
+df_final.to_csv("courses.csv", index=False, encoding="utf-8-sig")
+print(f"\n Saved to courses.csv")

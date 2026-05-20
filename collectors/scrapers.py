@@ -9,10 +9,6 @@ import re
 from bs4 import BeautifulSoup
 
 
-SEARCH_TERM_1 = "data science"
-SEARCH_TERM_2 = "AI"
-SEARCH_TERM_3 = "python"
-
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) "
@@ -265,13 +261,3 @@ def scrape_codecademy(search_term):
     df = pd.DataFrame(ready_courses) if ready_courses else empty_dataframe()
     print(f"[Codecademy] Status: {'Success' if not df.empty else 'No results'} — {len(df)} courses found")
     return df
-
-df = scrape_geeksforgeeks(SEARCH_TERM_1)
-print(df.head(10).to_string(index=False))
-
-df = scrape_coursera(SEARCH_TERM_2)
-print(df.head(10).to_string(index=False))
-
-df = scrape_codecademy(SEARCH_TERM_3)
-print(df.head(10).to_string(index=False))
-
