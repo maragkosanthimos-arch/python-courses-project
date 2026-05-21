@@ -66,6 +66,11 @@ def scrape_geeksforgeeks(search_term):
     data = json.loads(script_tag.string)
     courses_raw = data.get("itemListElement", [])
 
+    if courses_raw:
+        print("=== DEBUG KEYS ===")
+        first = courses_raw[0].get("item", courses_raw[0])  # GeeksForGeeks έχει "item" wrapper
+        print(json.dumps(first, indent=2))
+
     ready_courses = []
 
     for item in courses_raw[:20]:
@@ -73,6 +78,12 @@ def scrape_geeksforgeeks(search_term):
 
         title    = course.get("name", "N/A")
         provider = course.get("provider", {}).get("name", "GeeksForGeeks")
+        difficulty = next(
+            (course.get(key) for key in ["difficultyLevel", "educationalLevel", "skillLevel", "Experience"]
+            if course.get(key)),
+            "N/A"
+        )
+
 
         # Κόστος
         offers   = course.get("offers", [{}])
@@ -94,7 +105,7 @@ def scrape_geeksforgeeks(search_term):
                 "Course Title"         : title,
                 "Provider / University": provider,
                 "Category"             : "Programming",
-                "Difficulty Level"     : "N/A",
+                "Difficulty Level"     : difficulty,
                 "Cost"                 : cost,
                 "Duration"             : duration,
                 "Teaching Language"    : "English"
@@ -130,8 +141,11 @@ def scrape_coursera(search_term="python"):
     found_json = False
 
     for script in scripts:
-
         text = script.get_text()
+        if "courseName" in text or "courses" in text.lower():
+            found_json = True
+            print("=== COURSERA RAW SAMPLE ===")
+            print(text[:3000])
 
         # Ψάχνουμε embedded JSON data
         if "courseName" in text or "courses" in text.lower():
@@ -146,11 +160,11 @@ def scrape_coursera(search_term="python"):
                 text
             )
 
-            difficulties = re.findall(
-                r'"difficultyLevel":"(.*?)"',
-                text
+            difficulties = (
+                re.findall(r'"difficultyLevel":"([^"]*)"', text) or
+                re.findall(r'"educationalLevel":"([^"]*)"', text) or
+                re.findall(r'"skillLevel":"([^"]*)"', text)
             )
-
             prices = re.findall(r'\$\d+', text)
 
             for i, title in enumerate(titles[:20]):
@@ -224,6 +238,10 @@ def scrape_codecademy(search_term):
 
     data = json.loads(script_tag.string)
     courses_raw = data.get("itemListElement", [])
+    if courses_raw:
+        print("=== DEBUG KEYS ===")
+        first = courses_raw[0].get("item", courses_raw[0])  # GeeksForGeeks έχει "item" wrapper
+        print(json.dumps(first, indent=2))
 
     ready_courses = []
 
@@ -231,7 +249,13 @@ def scrape_codecademy(search_term):
 
         title    = course.get("name", "N/A")
         provider = course.get("provider", {}).get("name", "Codecademy")
-
+        difficulty = course.get("url", "")
+        if "beginner" in url or "introduction" in url or "learn-" in url:
+            difficulty = "Beginner"
+        elif "intermediate" in url:
+            difficulty = "Intermediate"
+        else:
+            difficulty = "N/A"  
         # Κόστος — "Partially Free", "Subscription", κλπ
         cost = course.get("offers", {}).get("category", "N/A")
 
@@ -252,7 +276,7 @@ def scrape_codecademy(search_term):
             "Course Title"         : title,
             "Provider / University": provider,
             "Category"             : "Programming",
-            "Difficulty Level"     : "N/A",
+            "Difficulty Level"     : difficulty,
             "Cost"                 : cost,
             "Duration"             : duration,
             "Teaching Language"    : "English"

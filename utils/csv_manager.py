@@ -8,7 +8,7 @@ from collectors.scrapers import scrape_geeksforgeeks, scrape_codecademy, scrape_
 
 SEARCH_TERM_1 = "data science"
 SEARCH_TERM_2 = "AI"
-SEARCH_TERM_3 = "python"
+SEARCH_TERM_3 = "programming"
 
 df_openlib = fetch_openlib(SEARCH_TERM_3)
 df_itunes  = fetch_itunes(SEARCH_TERM_3)
