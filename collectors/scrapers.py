@@ -193,7 +193,7 @@ def scrape_coursera(search_term="python"):
                     else "N/A"
                 )
 
-                #αν δεν βρουμε τιμη, βάζουμε "N/A"
+                #αν δεν βρουμε τιμη, βάζουμε "Varies"
                 cost = prices[i] if i < len(prices) else "Varies"
 
                 #αντικατάσταση unicode για το & που εμφανιζεται σε πολλους τιτλους μέσω παρατηρήσεων

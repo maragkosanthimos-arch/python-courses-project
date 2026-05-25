@@ -41,9 +41,21 @@ DIFFICULTY_MAP = {
     "foundations":   "Beginner",
     "intermediate":  "Intermediate",
     "medium":        "Intermediate",
+    "varies":        "Intermediate",
+    "mixed":         "Intermediate",
+    "complete":      "Intermediate",
+    "little experience": "Intermediate",
+    "applied":       "Intermediate",
+    "practical":     "Intermediate",
+    "computational": "Intermediate",
+    "specialization": "Intermediate",   
     "advanced":      "Advanced",
     "expert":        "Advanced",
+    "deep learning":   "Advanced",
     "professional":  "Advanced",
+    "mastering":     "Advanced",
+    "full stack":    "Advanced",
+    "devops":        "Advanced",
     "all levels":    "All Levels",
     "varies":        "All Levels",
     "mixed":         "All Levels",
@@ -60,7 +72,7 @@ RELEVANT_KEYWORDS = [
     "coding", "data", "machine learning", "web", "software"
 ]
 
-def filter_results(df, search_term):
+def filter_results(df, *search_term):
     
     def is_relevant(title):
         title_lower = title.lower()
@@ -68,7 +80,7 @@ def filter_results(df, search_term):
         if any(word in title_lower for word in IRRELEVANT_KEYWORDS):
             return False
         
-        if search_term.lower() in title_lower:
+        if any(term.lower() in title_lower for term in search_term):
             return True
         
         if any(word in title_lower for word in RELEVANT_KEYWORDS):
@@ -107,24 +119,24 @@ def normalise_category(category):
              return value
     return "General"
 
-def normalise_difficulty(difficulty,title=" ",url=" "):
-    
-    if isinstance(difficulty, str) and difficulty != "All Levels":
+def normalise_difficulty(difficulty, title="", url=""):
+    # Start from the difficulty field
+    base = "All Levels"
+    if isinstance(difficulty, str) and difficulty.strip():
         lower = difficulty.strip().lower()
+        lower1 = title.strip().lower()
         for keyword, normalized in DIFFICULTY_MAP.items():
-            if keyword in lower:
-                return normalized
+            if keyword in lower or keyword in lower1:
+                base = normalized
+                break
 
-    
+    # Only upgrade to Advanced if title signals it
     combined = (title + " " + url).lower()
-    if any(w in combined for w in ["beginner", "intro", "basic", "foundations", "learn-","fundamentals", "getting started", "for everyone", "for all","python"]):
-        return "Beginner"
-    elif any(w in combined for w in ["intermediate", "medium","varies", "mixed","little experience","c","cpp"]):
-        return "Intermediate"
-    elif any(w in combined for w in ["advanced", "expert", "professional", "sde","mastering","full stack"]):
+    if any(w in combined for w in ["advanced", "expert", "professional",
+                                    "sde", "mastering", "full stack", "devops"]):
         return "Advanced"
 
-    return "All Levels"
+    return base
 
 def normalise_cost(cost):
     if not isinstance(cost, str):
