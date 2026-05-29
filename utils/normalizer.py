@@ -16,31 +16,33 @@ import pandas as pd
 
 #χάρτης κατηγοριών καθώς τα JSON απο τα API και τα Scrapers δεν τα παρέχουν, τα αντλούμε από το πεδιο της κατηγορίας και τον τίτλο
 CATEGORY_MAP = {
-    "programming":          "Programming",
-    "computer science":     "Programming",
-    "web development":      "Web Development",
+    "sql":                  "Databases",
+    "database":             "Databases",
     "data science":         "Data Science",
     "data analytics":       "Data Science",
     "machine learning":     "Data Science",
     "artificial intelligence": "Data Science",
+    "deep learning":        "Data Science",
     "ai":                   "Data Science",
     "cybersecurity":        "Cybersecurity",
     "devops":               "DevOps",
     "cloud":                "Cloud Computing",
     "mobile":               "Mobile Development",
-    "database":             "Databases",
-    "sql":                  "Databases",
+    "web development":      "Web Development",
+    "sound engineering":    "Sound Engineering",
+    "sound":                "Sound Engineering",
+    "computer science":     "Programming",
+    "web":                  "Programming",
     "python":               "Programming",
     "py":                   "Programming",
-    "web":                  "Programming",
-    "sound engineering":    "Sound Engineering",
-    "sound":                "Sound Engineering"
+    "programming":          "Programming",
 }
 
 #το ίδιο ισχύει για την δυσκολία πολλές φορές, οπότε την αντλούμε επίσης απο τον τίτλο
 DIFFICULTY_MAP = {
     "beginner":      "Beginner",
     "introduction":  "Beginner",
+    "learn":         "Beginner",
     "introductory":  "Beginner",
     "intro":         "Beginner",
     "what is":       "Beginner",
