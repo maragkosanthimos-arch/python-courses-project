@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import time
 
 #============================
 #Σημείωση: Τα 2 πρώτα API ήταν οι μόνες λύσεις που δεν χρειαζόντουσαν authentication, οπότε τα έβαλα πρώτα για να έχω δεδομένα για να δουλέψω με το normalization και το csv manager
@@ -28,59 +29,74 @@ def empty_dataframe():
 
 
 # =========================================================
-# 🔵 API 1 — Open Library API
+#  API 1 — DEV.to API
 # =========================================================
 
-def fetch_openlib(search_term):
+def fetch_devto(search_term):
 
-    print(f"\n[Open Library] Sending request...")
-
-    #χτιζουμε το url με τις παραμετρους τις αναζητησης οπως search term, πεδια που θελουμε να επιστρεφουν, και οριο αποτελεσματων
+    print(f"\n[DEV.to] Sending request...")
     url = (
-        f"https://openlibrary.org/search.json"
-        f"?q={search_term}+programming"
-        f"&fields=title,author_name,subject,language"
-        f"&limit=20"
+        f"https://dev.to/api/articles"
+        f"?tag={search_term}"
+        f"&per_page=20"
     )
 
     #επιστροφη άδειου dataFrame σε περιπτωση που το αιτημα αποτυχει για οποιοδηποτε λογο
     try:
         response = requests.get(url, timeout=10)
     except requests.RequestException as e:
-        print(f"[Open Library] Connection error: {e}")
+        print(f"[DEV.to] Connection error: {e}")
         return empty_dataframe()
 
     #o κωδικος 200 σημαινει επιτυχια ευρεσης πληροφοριων, οποτε αν δεν ειναι 200 υπηρξε error και επιστρεφουμε κενο dataframe
     if response.status_code != 200:
-        print(f"[Open Library] API Error: {response.status_code}")
+        print(f"[DEV.to] API Error: {response.status_code}")
         return empty_dataframe()
     
     #περιμενουμε data σε μορφη json και τα αποθηκευουμε σε μεταβλητη
     data = response.json()
     #τα αποτελεσματα της αναζητησης ειναι μεσα στο πεδιο "docs" του json, οποτε τα αποθηκευουμε σε μεταβλητη
-    books_raw = data.get("docs", [])
 
-    print(f"[Open Library] Status: Success — {len(books_raw)} results found")
+    print(f"[DEV.to] Status: Success — {len(data)} results found")
 
     #κενος πινακας να βάλουμε τα αποτελεσματα για να φτιαξουμε το dataframe
     cleaned = []
 
-    for book in books_raw[:20]:
-        cleaned.append({
-            "Course Title"         : book.get("title", "N/A"),
-            "Provider / University": ", ".join(book.get("author_name", ["Unknown Author"])),
-            "Category"             : ", ".join(book.get("subject", ["Programming"])[:2]),
-            "Difficulty Level"     : "All Levels",   #δεν παρεχονται πληροφοριες μεσω του API για το επιπεδο δυσκολιας, τη διαρκεια και το κοστος
-            "Cost"                 : "Free",    #site με βιβλία άρα δωρεάν
-            "Duration"             : "Self-paced",     #το ίδιο και για τη διάρκεια
-            "Teaching Language"    : ", ".join(book.get("language", ["English"])[:1])
-        })
+    for item in data:
+        tags = item.get("tag_list", [])
+        
+        # Category από tags
+        category = "General"
+        for tag in tags:
+            if tag in ["python", "javascript", "java", "programming", "webdev"]:
+                category = "Programming"
+                break
+            elif tag in ["datascience", "machinelearning", "ai"]:
+                category = "Data Science"
+                break
+            elif tag in ["sql", "database"]:
+                category = "Database"
+                break
+
+        title = item.get("title", "")
+        if not title or title == "nan":
+            continue  # παράλειψε άρθρα χωρίς τίτλο
+
+    cleaned.append({
+        "Course Title"         : title,
+        "Provider / University": item.get("user", {}).get("name", "Unknown"),
+        "Category"             : category,
+        "Difficulty Level"     : "All Levels",
+        "Cost"                 : "Free",
+        "Duration"             : "Self-paced",
+        "Teaching Language"    : "English"  # DEV.to είναι αγγλόφωνο site
+    })
 
     return pd.DataFrame(cleaned) if cleaned else empty_dataframe()
 
 
 # =========================================================
-# 🟠 API 2 — iTunes Search API
+#  API 2 — iTunes Search API
 # =========================================================
 
 def fetch_itunes(search_term):
@@ -131,7 +147,7 @@ def fetch_itunes(search_term):
 
 
 # =========================================================
-# 🟢 API 3 — GitHub Search API
+#  API 3 — GitHub Search API
 # =========================================================
 
 def fetch_github(search_term):

@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import re
 from utils.csv_manager import CSV_FILE, load_from_csv
 
+#συναρτηση που μετατρέπει διάρκεια σε ώρες ώστε να γινει σωστά η σύγκριση μεταξύ ωρών, ημερών, βδομάδων κλπ
+#παρόλα αυτά στο γράφημα θα παρουσιάζονται με τις μονάδες τους τις κανονικές. αυτό γινεται μόνο για τη σύγκριση
 def convertor_to_hours(duration):
     if not isinstance(duration, str):
         return "None"
@@ -30,6 +32,7 @@ def convertor_to_hours(duration):
         return None
     return None
 
+#μαζεύουμε τους 5 παρόχους με μεγαλύτερη διάρκεια
 def get_top_providers(df,top=5):
     if df.empty:
         return []
@@ -39,6 +42,7 @@ def get_top_providers(df,top=5):
     df=df.sort_values(by="Hours",ascending=False).head(top)
     return df
 
+#5 μαθήματα με μεγαλύτερη διάρκεια
 def bar_chart(top=5):
     df=load_from_csv() 
     top_providers = get_top_providers(df,top)
@@ -66,6 +70,8 @@ def bar_chart(top=5):
     plt.tight_layout()
     plt.show()
 
+#κατανομη μαθηματων βάσει δυσκολίας
+#όπως παρατηρείτε αφήνω πολλα debuggers για να βλέπετε τον τρόπο σκέψης μας 
 def pie_chart():
     df=load_from_csv()
     print(f"[DEBUG] Loading from: {CSV_FILE}")  # να δούμε ποιο αρχείο φορτώνει
@@ -73,7 +79,6 @@ def pie_chart():
         print("No data to display.")
         return
     counts = (df["Difficulty Level"].value_counts())
-    counts = counts[~counts.index.isin(["N/A"])]
     
     fig,ax= plt.subplots(figsize=(8,8))
     ax.pie(counts.values, labels=counts.index, autopct="%1.1f%%", startangle=140)
@@ -81,6 +86,7 @@ def pie_chart():
     plt.tight_layout()
     plt.show()
 
+#ξαναπαιρνουμε τα 5 μαθήματα με την μεγαλύτερη διάρκεια για να τα συσχετίσουμε με το κόστος να δουμε τη σχέση κόστους-διάρκειας 
 def line_plot():
     df=load_from_csv()
     if df.empty:
@@ -88,6 +94,8 @@ def line_plot():
         return
     top5=get_top_providers(df,top=5)
     top5=top5.copy()
+    #μεσω lamda function μετατρέπουμε το κόστος απο string σε αριθμό για σύγκριση
+    #πάντα σε αντίγραφο για να μην πειράξουμε το αρχικό df
     top5["Cost_Num"]=top5["Cost"].apply(lambda cost: 0.0 if cost.lower() == "free" else
                                         float(re.search(r"(\d+(\.\d+)?)", cost).group(1))
                                         if re.search(r"(\d+(\.\d+)?)", cost) else None) 

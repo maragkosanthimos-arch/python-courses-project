@@ -6,9 +6,9 @@ import os
 import pandas as pd
 from utils.normalizer import normalise_dataframe
 
-# Βρίσκει το path του csv σε σχέση με το csv_manager.py
+# Βρίσκει το path του φακέλου του project και μεσω της os.path.join μπαινει στον φάκελο data να βαλει το csv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CSV_FILE = os.path.join(BASE_DIR, "data", "courses.csv")
+CSV_FILE = os.path.join(BASE_DIR, "data", "courses_1115493.csv")
 
 COLUMNS = [
     "Course Title", "Provider / University", "Category",
@@ -49,22 +49,3 @@ def load_from_csv(filepath: str = CSV_FILE) -> pd.DataFrame:
     df = pd.read_csv(filepath, encoding="utf-8-sig")
     print(f"[CSV] Loaded {len(df)} courses from '{filepath}'")
     return df
-
-"""
-def filter_courses(df: pd.DataFrame, category: str = None,
-                   difficulty: str = None, search: str = None) -> pd.DataFrame:
-    if df.empty:
-        return df
-
-    if category and category != "All":
-        df = df[df["Category"] == category]
-
-    if difficulty and difficulty != "All":
-        df = df[df["Difficulty Level"] == difficulty]
-
-    if search:
-        mask = df["Course Title"].str.contains(search, case=False, na=False)
-        df = df[mask]
-
-    return df
-"""

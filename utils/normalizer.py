@@ -1,6 +1,6 @@
 """
 κανονικοποίηση δεδομένων όπως:
-- Κανονικοποίηση Min-Max
+-φιλτραρισμα τιτλου και df
 -αφαιρεση duplicates
 -κανει lowercase
 -κανει κανονικοποίηση μονάδων
@@ -13,9 +13,10 @@
 import re
 import pandas as pd
 
+
+#χάρτης κατηγοριών καθώς τα JSON απο τα API και τα Scrapers δεν τα παρέχουν, τα αντλούμε από το πεδιο της κατηγορίας και τον τίτλο
 CATEGORY_MAP = {
     "programming":          "Programming",
-    "online course":        "Programming",
     "computer science":     "Programming",
     "web development":      "Web Development",
     "data science":         "Data Science",
@@ -27,16 +28,24 @@ CATEGORY_MAP = {
     "devops":               "DevOps",
     "cloud":                "Cloud Computing",
     "mobile":               "Mobile Development",
-    "database":             "Database",
-    "education":           "General",
-    "podcast":             "General",
+    "database":             "Databases",
+    "sql":                  "Databases",
+    "python":               "Programming",
+    "py":                   "Programming",
+    "web":                  "Programming",
+    "sound engineering":    "Sound Engineering",
+    "sound":                "Sound Engineering"
 }
 
+#το ίδιο ισχύει για την δυσκολία πολλές φορές, οπότε την αντλούμε επίσης απο τον τίτλο
 DIFFICULTY_MAP = {
     "beginner":      "Beginner",
     "introduction":  "Beginner",
     "introductory":  "Beginner",
+    "intro":         "Beginner",
+    "what is":       "Beginner",
     "basic":         "Beginner",
+    "tutorial":      "Beginner",
     "fundamentals":  "Beginner",
     "foundations":   "Beginner",
     "intermediate":  "Intermediate",
@@ -48,7 +57,9 @@ DIFFICULTY_MAP = {
     "applied":       "Intermediate",
     "practical":     "Intermediate",
     "computational": "Intermediate",
-    "specialization": "Intermediate",   
+    "specialization": "Intermediate",
+    "analyze":        "Intermediate",
+    "analysis":       "Intermediate",   
     "advanced":      "Advanced",
     "expert":        "Advanced",
     "deep learning":   "Advanced",
@@ -56,24 +67,27 @@ DIFFICULTY_MAP = {
     "mastering":     "Advanced",
     "full stack":    "Advanced",
     "devops":        "Advanced",
-    "all levels":    "All Levels",
-    "varies":        "All Levels",
-    "mixed":         "All Levels",
+    "all levels":    "All Levels"
 }
 
-
+#λέξεις κλειδιά που θέλουμε και αντίστοιχα δεν θέλουμε να έχει ενα course στον τίτλο του
+#έτσι, για να φιλτράρουμε και να συλλέξουμε δεδομένα που μας αφορούνψάχνουμε για κάποιες λέξεις οι οποίες μας δείχνουν ότι το δεομένο που συλλέξαμε είναι εκτός θεματικής της άσκησης
+#όλα πάντα βάσει των search terms μας
 IRRELEVANT_KEYWORDS = [
-    "podcast", "novel", "fiction", "policy", "marketing",
+    "podcast", "novel", "fiction", "policy",
     "wellness", "seminar", "lecture", "audioexperience"
 ]
 
 RELEVANT_KEYWORDS = [
     "programming", "python", "java", "javascript", "course",
-    "coding", "data", "machine learning", "web", "software"
+    "coding", "data", "machine learning", "web", "software","sql"
 ]
 
+#συνάρτηση που αξιοποιεί τους πίνακες απο πάνω για φροντίσει ότι δεν θα συμπεριληφθούν 
+#άσχετες πληροφορίες στο csv
 def filter_results(df, *search_term):
-    
+    #εφαρμόζουμε lower case στον τίτλο και ψάχνουμε να συμπεριλάβουμε ότι είναι σχετικό 
+    #με τους search terms και τα relevant keywords μας
     def is_relevant(title):
         title_lower = title.lower()
         
@@ -83,69 +97,77 @@ def filter_results(df, *search_term):
         if any(term.lower() in title_lower for term in search_term):
             return True
         
-        if any(word in title_lower for word in RELEVANT_KEYWORDS):
+        if any(word in title_lower for word in RELEVANT_KEYWORDS) or any(word in title_lower for word in CATEGORY_MAP):
             return True
         
         return False
     
     return df[df["Course Title"].apply(is_relevant)]
 
+#ακολουθουν συνάρτήσεις κανονικοποίησης κάθε πεδίου
+
+#κανονικοποίηση τίτλου
+#δεν καναμε αφαίρεση αριθμών καθώς μπορει να σηματοδοτούν έκδοση ή νουμερο απο σειρά courses
 def normalise_course_title(title):
-    if not isinstance(title, str):
+    if not isinstance(title, str) or title.lower() == "nan":
         return "N/A"
     title = title.strip()
-    title = re.sub(r"[-_/]", " ", title)
-    title = re.sub(r"[^\w\s]", "", title)
-    title = re.sub(r"\s+", " ", title)
-    return title.title()
+    title = re.sub(r"[-_/]", " ", title)    #αντικατάσταση ειδικών χαρακτήρων με κενό
+    title = re.sub(r"[^\w\s]", "", title)   #αφαίρεση μη αλφαριθμητικών
+    title = re.sub(r"\s+", " ", title)  #συμπίεση κενών
+    return title.title()    #κεφαλαία στο πρώτο γράμμα κάθε λέξης
    
 
+#κανονικοποίηση ονόματος παρόχου - πανεπιστημίου
 def normalise_provider(provider):
     if not isinstance(provider, str):
         return "N/A"
     provider = provider.strip()
     provider = re.sub(r"\s+", " ", provider)
     provider = re.sub(r"[^\w\s]", "", provider)   
-    provider = re.sub(r"\d+", "", provider)
+    provider = re.sub(r"\d+", "", provider) #αφαίρεση αριθμών
     return provider.title()
     
-
+#κανονικοποίηση κατηγορίας με ψάξιμο ανάμεσα στον χαρτη κατηγοριών πιο πάνω 
+#για σωστό mapping
 def normalise_category(category):
     if not isinstance(category,str):
         return "General"
     category=category.strip().lower()
-    for key,value in CATEGORY_MAP.items():
+    for key,value in CATEGORY_MAP.items():      
         if key in category:
-             return value
-    return "General"
+            return value
+    return "General"       #αν δεν βρουμε κατηγορία ούτε από το πεδίο όυτε από τον τίτλο(εξηγω στην normalise_dataframe), έχουμε fallback = General
 
 def normalise_difficulty(difficulty, title="", url=""):
-    # Start from the difficulty field
+    #αρχικοποιούμε σε all levels
     base = "All Levels"
     if isinstance(difficulty, str) and difficulty.strip():
         lower = difficulty.strip().lower()
         lower1 = title.strip().lower()
-        for keyword, normalized in DIFFICULTY_MAP.items():
-            if keyword in lower or keyword in lower1:
+        for keyword, normalized in DIFFICULTY_MAP.items():      #mapping δυσκολίας μετά απο ψάξιμο και σε πεδίο δυσκολίας και σε τίτλο για σιγουρία
+            if keyword in lower or keyword in lower1:           #αυτό δεν μας τρομάζει για error καθώς αποκλείεται να έχουν conflicting difficulties
                 base = normalized
                 break
 
-    # Only upgrade to Advanced if title signals it
+    #advanced δυσκολία πιο ειδικό ψάξιμο για καλύτερο mapping καθώς ειναι πιο σπάνια
     combined = (title + " " + url).lower()
     if any(w in combined for w in ["advanced", "expert", "professional",
                                     "sde", "mastering", "full stack", "devops"]):
         return "Advanced"
 
-    return base
+    return base     #fallback
 
 def normalise_cost(cost):
     if not isinstance(cost, str):
         return "N/A"
     original = cost.strip()
-    lower=original.lower()
+    lower=original.lower()  #τοπική μεταβλητή για να ψάχνουμε το αυτούσιο κόστος
+    #καλύπτουμε όλες τις περιπτώσεις του δωρεάν
     if any(w in lower for w in ["free", "0", "no cost", "gratis", "partially free", "enroll for free"]):
         return "Free"
     
+    #εξαγωγή τιμής σε δολάρια
     match = re.search(r"\$(\d+(\.\d+)?)", original)
     if match:
         return match.group()
@@ -153,6 +175,7 @@ def normalise_cost(cost):
     if any(w in lower for w in ["paid", "subscription", "premium", "fee"]):
         return "Needs Paid Subscription"
 
+    #fallbacks
     if "varies" in lower:
         return "Varies"
 
@@ -163,12 +186,14 @@ def normalise_duration(duration):
         return "N/A"
     duration = duration.strip().lower()
     
+    #αν δεν βρεθει αριθμος στο string, θεωρείται self-paced
     match = re.search(r"(\d+(\.\d+)?)", duration)
     if not match:
         return "Self-paced"
 
     number = match.group(1)
 
+    # mapping της ώρας 
     if any(w in duration for w in ["hour", "hr"]):
         return f"{number} Hours"
     elif "day" in duration:
@@ -181,6 +206,8 @@ def normalise_duration(duration):
         return f"{number} Years"
     return "Self-paced"
 
+#κανονικοποίηση γλώσσας
+#pretty straigh-forward, αν υπάρχει συντομογραφία κάποιας γλώσσας την καθαρογράφουμε
 def normalise_language(language):
     if not isinstance(language, str):
         return "N/A"
@@ -197,10 +224,20 @@ def normalise_language(language):
 def normalise_dataframe(df):
     if df.empty:
         return df
+    #στην συναρτήσεις επεξεργασίας dataframe αποφασίσαμε να μην επεξεργαζόμαστε απευθείας το αρχικό
+    #αλλά αντί αυτού να φτιάχνουμε ένα αντίγραφο για ασφάλεια
+    #εφαρμόζουμε όλες τις συναρτήσεις αντίστοιχα για να μην τις καλούμε στα άλλα files ξεχωριστά
     df=df.copy()
     df["Course Title"]=df["Course Title"].apply(normalise_course_title)
     df["Provider / University"]=df["Provider / University"].apply(normalise_provider)
-    df["Category"]=df["Category"].apply(normalise_category)
+    #χρησιμοποιούμε lamda για ευκολα tasks αντί μια ολόκληρη νέα συνάρτηση
+    #εφαρμόζουμε normalise_category και ψάχνουμε και στο πεδίο κατηγορία και στον τ´τιλο για καλύτερο mapping
+    df["Category"] = df.apply(
+        lambda row: normalise_category(
+            str(row["Category"] or "") + " " + str(row["Course Title"] or "")
+        ), axis=1
+    )
+    #αντίστοιχα εδώ αντλούμε από τον τίτλο, το πεδίο δυσκολίας και το url
     df["Difficulty Level"] = df.apply(
     lambda row: normalise_difficulty(
         row["Difficulty Level"],
@@ -208,16 +245,17 @@ def normalise_dataframe(df):
         row.get("URL", "")
     ),
     axis=1
-)
+    )
     df["Cost"]=df["Cost"].apply(normalise_cost)
     df["Duration"]=df["Duration"].apply(normalise_duration)
     df["Teaching Language"]=df["Teaching Language"].apply(normalise_language)
+    #ξανα drop duplicates για double-check
     df.drop_duplicates(
         subset=["Course Title", "Provider / University"],
         keep="last",
         inplace=True
     )
-    df.reset_index(drop=True, inplace=True)
+    df.reset_index(drop=True, inplace=True)   #επαναρύθμιση index μετά την αφαίρεση
     return df
 
     
