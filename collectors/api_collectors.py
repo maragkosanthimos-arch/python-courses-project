@@ -1,6 +1,5 @@
 import requests
 import pandas as pd
-import time
 
 #============================
 #Σημείωση: Τα 2 πρώτα API ήταν οι μόνες λύσεις που δεν χρειαζόντουσαν authentication, οπότε τα έβαλα πρώτα για να έχω δεδομένα για να δουλέψω με το normalization και το csv manager

@@ -61,7 +61,6 @@ def scrape_geeksforgeeks(search_term):
         print("[GeeksForGeeks] Failed to retrieve data.")
         return empty_dataframe()
 
-    #ψαχνουμε το script που περιεχει τα δεδομενα σε μορφη json και τα αποθηκευουμε σε μεταβλητη
     soup = BeautifulSoup(html, "html.parser")
 
     #ψαχνουμε το script tag που περιεχει τα δεδομενα σε μορφη json και τα αποθηκευουμε σε μεταβλητη

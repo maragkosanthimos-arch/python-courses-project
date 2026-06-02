@@ -1,5 +1,6 @@
 ﻿Course Title,Provider / University,Category,Difficulty Level,Cost,Duration,Teaching Language
-From Engineer To Architect How Ai Is Redefining The Frontend Role,Quwam Bode Binuyo,Data Science,All Levels,Free,Self-paced,English
+Stop Saying Greatbuild A Real Ai Interview Coach With Claude Code,Guanyi Liu,Data Science,All Levels,Free,Self-paced,English
+Postgresql 08000 오류 원인과 해결 방법 완벽 가이드,Umzzil Nng,Databases,All Levels,Free,Self-paced,English
 Introduction To C Programming Winter 2010,Computer Science  Engineering,Programming,Beginner,Free,Self-paced,English
 Falcon Programming,Programming Falcon,Programming,All Levels,Free,Self-paced,English
 Open Ciass Programming,Arya Adhi Nugraha,Programming,All Levels,Free,Self-paced,English
@@ -76,66 +77,65 @@ Java Programming Course Self Paced,Geeksforgeeks,Programming,All Levels,$15.98,5
 Python Programming Course Self Paced,Geeksforgeeks,Programming,All Levels,$15.98,56 Days,English
 Javascript Programming Course Self Paced,Geeksforgeeks,Programming,All Levels,$15.98,56 Days,English
 Programming Fundamentals,Coursera,Programming,Beginner,Varies,Self-paced,English
-Introductory C Programming,Coursera,Programming,Beginner,Varies,Self-paced,English
 Computer Science Programming With A Purpose,Coursera,Programming,All Levels,Varies,Self-paced,English
+Introductory C Programming,Coursera,Programming,Beginner,Varies,Self-paced,English
 Code Yourself An Introduction To Programming,Coursera,Programming,Beginner,Varies,Self-paced,English
 C Programming For Everybody,Coursera,Programming,All Levels,Varies,Self-paced,English
 C Programming With Linux,Coursera,Programming,All Levels,Varies,Self-paced,English
 Python 3 Programming,Coursera,Programming,All Levels,Varies,Self-paced,English
 Gpu Programming,Coursera,Programming,All Levels,Varies,Self-paced,English
-Java Programming And Software Engineering Fundamentals,Coursera,Programming,Beginner,Varies,Self-paced,English
 Python Programming Fundamentals,Coursera,Programming,Beginner,Varies,Self-paced,English
+Certified Associate In Python Programming Pcap,Coursera,Programming,All Levels,Varies,Self-paced,English
 Programming In Python From Meta,Coursera,Programming,All Levels,Varies,Self-paced,English
 Programming For Everybody,Coursera,Programming,All Levels,Varies,Self-paced,English
-Programming With Ai,Coursera,Data Science,All Levels,Varies,Self-paced,English
 Programming In Python,Coursera,Programming,All Levels,Varies,Self-paced,English
+Programming With Ai,Coursera,Data Science,All Levels,Varies,Self-paced,English
 Programming With Javascript,Coursera,Programming,All Levels,Varies,Self-paced,English
 Programming With Java,Coursera,Programming,All Levels,Varies,Self-paced,English
-Network Programming,Coursera,Programming,All Levels,Varies,Self-paced,English
+Programming With Scratch,Coursera,Programming,All Levels,Varies,Self-paced,English
 Fundamentals Of Audio And Music Engineering Part 1 Musical Sound Electronics,Coursera,Sound Engineering,Beginner,Varies,Self-paced,English
 Music Production And Sound Engineering,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
-Sound Engineering Writing,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
-Sound Engineering From Berklee,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
-Sound Engineering Digital Communications,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
 Live Sound Engineering,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
+Sound Engineering Writing,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
+Sound Engineer Editing,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
+Sound Engineering Electronic Media,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
 Sound Engineering In Arts And Humanities,Coursera,Sound Engineering,All Levels,Varies,Self-paced,English
 Python For Data Science Ai Development,Coursera,Data Science,All Levels,Varies,Self-paced,English
 What Is Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Ibm Data Science,Coursera,Data Science,All Levels,Varies,Self-paced,English
 Foundations Of Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
-Data Science,Coursera,Data Science,All Levels,Varies,Self-paced,English
 Introduction To Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Applied Data Science With Python,Coursera,Data Science,Intermediate,Varies,Self-paced,English
-Python Project For Data Science,Coursera,Data Science,All Levels,Varies,Self-paced,English
+Data Science,Coursera,Data Science,All Levels,Varies,Self-paced,English
 Data Analysis With Python,Coursera,Programming,Intermediate,Varies,Self-paced,English
-Data Science Foundations,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Mathematics For Machine Learning And Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
+Google Advanced Data Analytics,Coursera,Data Science,Advanced,Varies,Self-paced,English
+Python Project For Data Science,Coursera,Data Science,All Levels,Varies,Self-paced,English
 What Is Data Science Deep Learning,Coursera,Data Science,Beginner,Varies,Self-paced,English
-Basic Data Analysis In Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
-Data Science Ibm,Coursera,Data Science,All Levels,Varies,Self-paced,English
+Basic In Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
+What Is Data Science From Ibm,Coursera,Data Science,Beginner,Varies,Self-paced,English
+What Is Data Science Machine Learning,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Data Science With Python,Coursera,Data Science,All Levels,Varies,Self-paced,English
+Short Course In What Is Data Science,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Data Science Specialization,Coursera,Data Science,Intermediate,Varies,Self-paced,English
-Data Science Google,Coursera,Data Science,All Levels,Varies,Self-paced,English
-Data Science Machine Learning,Coursera,Data Science,Beginner,Varies,Self-paced,English
 Databases And Sql For Data Science With Python,Coursera,Databases,All Levels,Varies,Self-paced,English
-Sql Foundations,Coursera,Databases,Beginner,Varies,Self-paced,English
 Microsoft Data Analysis With Sql Excel Power Bi,Coursera,Databases,Intermediate,Varies,Self-paced,English
-Sql A Practical Introduction For Querying Databases,Coursera,Databases,Beginner,Varies,Self-paced,English
 Sql For Data Analysis And Business Insights,Coursera,Databases,Intermediate,Varies,Self-paced,English
+Sql A Practical Introduction For Querying Databases,Coursera,Databases,Beginner,Varies,Self-paced,English
 Microsoft Sql Server,Coursera,Databases,All Levels,Varies,Self-paced,English
+Sql Foundations,Coursera,Databases,Beginner,Varies,Self-paced,English
 Introduction To Structured Query Language Sql,Coursera,Databases,Beginner,Varies,Self-paced,English
 Sql Fundamentals For Data Analysts,Coursera,Databases,Beginner,Varies,Self-paced,English
 Sql For Beginners,Coursera,Databases,Beginner,Varies,Self-paced,English
 Learn Sql Basics For Data Science,Coursera,Databases,Beginner,Varies,Self-paced,English
-Postgresql For Everybody,Coursera,Databases,All Levels,Varies,Self-paced,English
-Google Data Analytics,Coursera,Data Science,All Levels,Varies,Self-paced,English
+Tools Of The Trade Linux And Sql,Coursera,Databases,All Levels,Varies,Self-paced,English
 Sql Database,Coursera,Databases,All Levels,Varies,Self-paced,English
 Sql For Data Analytics,Coursera,Databases,All Levels,Varies,Self-paced,English
 Sql Programming,Coursera,Databases,All Levels,Varies,Self-paced,English
 Sql Python,Coursera,Databases,All Levels,Varies,Self-paced,English
 Sql For Data Science,Coursera,Databases,All Levels,Varies,Self-paced,English
 Intro To Sql,Coursera,Databases,Beginner,Varies,Self-paced,English
-Microsoft Sql Transact Sql,Coursera,Databases,All Levels,Varies,Self-paced,English
+Microsoft Sql Query Languages,Coursera,Databases,All Levels,Varies,Self-paced,English
 Computer Science,Codecademy,Programming,All Levels,Needs Paid Subscription,75 Hours,English
 Learn Javascript,Codecademy,Programming,Beginner,Free,15 Hours,English
 Learn Python 3,Codecademy,Programming,Beginner,Needs Paid Subscription,24 Hours,English

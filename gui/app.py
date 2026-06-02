@@ -446,75 +446,66 @@ class CourseGUI:
         except Exception as e:
             messagebox.showerror("Error", f"Recommendation error: {str(e)}")
 
-
+    #αποθήκευση δεδομένων σε csv με κλασσικούς και basic ελέγχους και διαδικασίες
+    #προσθέσαμε και messagebox για πιο ωραία και user friendly εικόνα
     def export_csv(self):
-        """Εξάγει τα τρέχοντα δεδομένα σε νέο αρχείο CSV μέσω της save_to_csv"""
         try:
-            # Έλεγχος αν υπάρχουν δεδομένα για εξαγωγή
             if self.df.empty:
                 messagebox.showwarning("Warning", "No data available to export.")
                 return
-            # Κλήση της βοηθητικής συνάρτησης αποθήκευσης
             save_to_csv(self.df)
             messagebox.showinfo("Export Complete", "Current data successfully exported to a new CSV file!")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-
+    #κλήσεις συναρτήσεων των γραφημάτων από τα buttons
     def show_bar_chart(self):
-        """Εμφανίζει bar chart με τα top-5 μαθήματα βάσει score"""
         try:
             bar_chart(top=5)  # top=5 για τα 5 καλύτερα μαθήματα
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def show_pie_chart(self):
-        """Εμφανίζει pie chart με ποσοστιαία κατανομή κατηγοριών"""
         try:
             pie_chart()
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def show_line_plot(self):
-        """Εμφανίζει line plot με εξέλιξη δεδομένων ανά κατηγορία/δυσκολία"""
         try:
             line_plot()
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-
+    #συνάρτηση επανασυλλογής
     def reset_and_restart(self):
-        """Διαγράφει το CSV, καθαρίζει την οθόνη και ξεκινά εκ νέου συλλογή"""
-
-        # Παράθυρο επιβεβαίωσης — ο χρήστης πρέπει να πατήσει "Yes" για να συνεχίσει
+        # ζητάει confirmation
         confirm = messagebox.askyesno(
             "Confirmation",
             "Are you sure you want to delete the previous CSV file and restart data collection from scratch?"
         )
-
+        
+        #αν ναι,διαγράφουμε τα παλιά δεδομένα, με την  βιβλιοθήκη os γιατι πρόκειται για διαγραφή όλου του csv ως αρχείο
         if confirm:
             try:
-                # Έλεγχος αν υπάρχει το αρχείο πριν την απόπειρα διαγραφής
                 if os.path.exists(self.csv_filename):
-                    os.remove(self.csv_filename)  # οριστική διαγραφή του αρχείου
+                    os.remove(self.csv_filename)  
                     print(f"[CSV Manager] Status: Deleted existing file {self.csv_filename}")
                 else:
-                    # Αν δεν υπάρχει αρχείο, συνεχίζουμε κανονικά
                     print(f"[CSV Manager] Status: No file found to delete. Starting fresh.")
 
-                # Επαναφορά του εσωτερικού DataFrame σε κενή κατάσταση
                 self.df = pd.DataFrame()
 
-                # Καθαρισμός του πίνακα στην οθόνη
                 self.update_table(self.df)
 
                 messagebox.showinfo("Reset Successful", "Previous data cleared. Starting new data collection...")
                 print("[Reset & Restart] Executing fresh data collection...")
 
-                # Λίστα για συγκέντρωση όλων των φρέσκων δεδομένων
+                #νέος πίνακας συλλογής σαν τον αντίστοιχο merged πιο πάνω και ακολουθάμε το ίδιο σκεπτικο
+                #update table με νεο df πιο πάνω, κλησεις συναρτήσεων συλλογής ξανά, ένωση, κανονικοποίηση απο την save and refresh data και τέλος
+                #με όλα τα απαραίτητα μηνύματα στη διαδρομή προφανώς
                 fresh_dfs = []
-
-                # ── Συλλογή από APIs ──
+                
                 try:
                     df_devto = pd.concat([fetch_devto(term) for term in self.search_terms], ignore_index=True)
                     fresh_dfs.append(df_devto)
@@ -546,14 +537,10 @@ class CourseGUI:
                     fresh_dfs.append(df_codecademy)
                 except Exception: pass
 
-                # Αν μαζεύτηκαν δεδομένα από τουλάχιστον μία πηγή, αποθήκευσέ τα
                 if fresh_dfs:
-                    # Ένωση όλων σε ένα DataFrame και παράδοση στη save_and_refresh_data
-                    # που θα αναλάβει κανονικοποίηση, dedup και δημιουργία νέου CSV
                     merged_fresh = pd.concat(fresh_dfs, ignore_index=True)
                     self.save_and_refresh_data(merged_fresh)
                 else:
-                    # Αν όλες οι πηγές απέτυχαν, ενημερώνουμε τον χρήστη
                     messagebox.showwarning("Warning", "Could not fetch any new data after reset.")
 
             except Exception as e:

@@ -101,8 +101,10 @@ def recommend_courses(df=None,Difficulty=None, Category=None, Language=None, max
     
     df = df.copy()
 
+    #υπολογισμός score για κάθε μάθημα
     df["Score"] = df.apply(calculate_score,axis=1)
 
+    #ταξινόμηση και επιλογή των 3 καλύτερων
     top3 = df.sort_values("Score", ascending=False).head(3)
     top3=top3[["Course Title", "Provider / University",
                  "Category", "Difficulty Level",
